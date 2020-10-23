@@ -11,11 +11,13 @@ function Player(name, rating, playstyle) {
   this.goals = 0
 }
 
-function Team(name, abbrev, players) {
+function Team(name, abbrev, players, emoji, role) {
   this.name = name
   this.abbrev = abbrev
   this.players = players
   this.goals = 0
+  this.emoji = emoji
+  this.role = role
 
   // Calculate team overall rating
   let total = 0
@@ -73,13 +75,13 @@ function score(team, time) {
   let rand = Math.floor(Math.random() * ratingAmount)
   if (rand < team.playerScoreChance(0)) {
     team.players[0].goals++
-    return scoreEvent(team.abbrev, team.players[0].name, time)
+    return scoreEvent(team.emoji, team.players[0].name, time)
   } else if (rand < team.playerScoreChance(0) + team.playerScoreChance(1)) {
     team.players[1].goals++
-    return scoreEvent(team.abbrev, team.players[1].name, time)
+    return scoreEvent(team.emoji, team.players[1].name, time)
   } else {
     team.players[2].goals++
-    return scoreEvent(team.abbrev, team.players[2].name, time)
+    return scoreEvent(team.emoji, team.players[2].name, time)
   }
 }
 
@@ -131,7 +133,7 @@ function Game(t1, t2) {
     } else {
       this.winner = t2
     }
-    this.events.push(this.t1.abbrev + ': ' + this.t1.goals + ' ' + t2.abbrev + ': ' + t2.goals)
+    this.events.push(this.t1.emoji + ': ' + this.t1.goals + ' ' + t2.emoji + ': ' + t2.goals)
   }
 }
 
