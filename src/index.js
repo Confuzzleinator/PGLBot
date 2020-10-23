@@ -1,13 +1,14 @@
+require('dotenv').config()
 const game = require('./game')
-const fs = require('fs')
 const Discord = require('discord.js')
-const path = require('path')
 const discordOutput = require('./discord_output')
 const Team = game.Team
 const Player = game.Player
 const Game = game.Game
 
 const client = new Discord.Client()
+console.log(process.env.DISCORD_BOT_KEY)
+client.login(process.env.DISCORD_BOT_KEY)
 const prefix = '!'
 const defaultDelay = 2000
 
@@ -72,7 +73,7 @@ client.on('message', (message) => {
       ++gameNum
       let game = new Game(t1, t2)
       game.events.push(
-        '**Game ' + gameNum + ' | ' + t1.emoji + ' (' + wins[0] + ' - ' + wins[1] + ') ' + t2.emoji + '**',
+        '__**Game ' + gameNum + ' | ' + t1.emoji + ' (' + wins[0] + ' - ' + wins[1] + ') ' + t2.emoji + '**__',
       )
       game.sim()
       seriesEvents = seriesEvents.concat(game.events)
@@ -86,9 +87,4 @@ client.on('message', (message) => {
     seriesEvents.push('Series Result: ' + t1.emoji + ' (' + wins[0] + ' - ' + wins[1] + ') ' + t2.emoji)
     discordOutput.delayed(seriesEvents, args[0], message.channel)
   }
-})
-
-fs.readFile(path.join(__dirname, '..', 'token.txt'), (err, data) => {
-  if (err) return console.log(err)
-  client.login(data.toString())
 })

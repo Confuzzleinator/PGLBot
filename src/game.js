@@ -66,7 +66,7 @@ function scoreEvent(team, player, time) {
   formattedTime += ':'
   if (time % 60 < 10) formattedTime += '0'
   formattedTime += time % 60
-  return formattedTime + ' - ' + player + ' has scored for ' + team
+  return team + ' - ' + formattedTime + ' - ' + player + ' scores'
 }
 
 function score(team, time) {
@@ -133,7 +133,21 @@ function Game(t1, t2) {
     } else {
       this.winner = t2
     }
-    this.events.push(this.t1.emoji + ': ' + this.t1.goals + ' ' + t2.emoji + ': ' + t2.goals)
+    this.events.push(
+      '---' +
+        this.t1.emoji +
+        ' (' +
+        (this.winner == t1 ? '**' : '') +
+        this.t1.goals +
+        (this.winner == t1 ? '**' : '') +
+        ' - ' +
+        (this.winner == t2 ? '**' : '') +
+        this.t2.goals +
+        (this.winner == t2 ? '**' : '') +
+        ') ' +
+        this.t2.emoji +
+        '---',
+    )
   }
 }
 
