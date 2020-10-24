@@ -107,6 +107,7 @@ client.on('message', async (message) => {
           ' ' +
           message.member.toString(),
       )
+      args[3] = maxGames
     }
     t1 = new Team(
       t1Data.name,
