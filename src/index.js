@@ -11,7 +11,7 @@ const Series = game.Series
 
 const client = new Discord.Client()
 client.login(process.env.DISCORD_BOT_KEY)
-const prefix = '.'
+const prefix = '!'
 const defaultDelay = 2000
 const maxDelay = 20000
 const minDelay = 2000
