@@ -14,6 +14,7 @@ let db = mysql.createConnection({
 const queries = {
   clearTeamsTable: 'TRUNCATE TABLE Teams',
   clearPlayersTable: 'TRUNCATE TABLE Players',
+  clearGamesTable: 'TRUNCATE TABLE Games',
   insertTeams: 'INSERT INTO Teams (name, abbreviation) VALUES',
   insertPlayers: 'INSERT INTO Players (name, rating, playstyle, team, rosterPos) VALUES',
   findTeamFromAbbrev: 'SELECT id FROM Teams WHERE abbreviation="',
@@ -107,8 +108,58 @@ async function getTeam(abbrev) {
   return rows[0][0]
 }
 
+function addGame(game, series) {
+  let query =
+    'INSERT INTO Games (seriesId, t1, t2, t1Player1, t1Player2, t1Player3, ' +
+    't2Player1, t2Player2, t2Player3, t1Goals1, t1Goals2, t1Goals3, t2Goals1, t2Goals2, t2Goals3) VALUES (' +
+    series +
+    ', "' +
+    game.t1.abbrev +
+    '", "' +
+    game.t2.abbrev +
+    '", "' +
+    game.t1.players[0].name +
+    '", "' +
+    game.t1.players[1].name +
+    '", "' +
+    game.t1.players[2].name +
+    '", "' +
+    game.t2.players[0].name +
+    '", "' +
+    game.t2.players[1].name +
+    '", "' +
+    game.t2.players[2].name +
+    '", ' +
+    game.t1.players[0].goals +
+    ', ' +
+    game.t1.players[1].goals +
+    ', ' +
+    game.t1.players[2].goals +
+    ', ' +
+    game.t2.players[0].goals +
+    ', ' +
+    game.t2.players[1].goals +
+    ', ' +
+    game.t2.players[2].goals +
+    ');'
+  db.query(query)
+}
+
+async function getGames() {
+  let results = await db.promise().query('SELECT * FROM Games')
+  return results
+}
+
+async function clearGames() {
+  await db.promise().query(queries.clearGamesTable)
+  return Promise.resolve()
+}
+
 exports.connect = connect
 exports.insertPlayers = insertPlayers
 exports.insertTeams = insertTeams
 exports.getPlayers = getPlayers
 exports.getTeam = getTeam
+exports.addGame = addGame
+exports.getGames = getGames
+exports.clearGames = clearGames

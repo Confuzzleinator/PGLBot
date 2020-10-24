@@ -4,6 +4,50 @@ let minimumOdds = 0.001
 let triplePlaystylePenalty = 30
 let doublePlaystylePenalty = 10
 
+function Series(t1, t2, delay, gamesToWin, mention) {
+  this.t1 = t1
+  this.t2 = t2
+  this.delay = delay
+  this.gamesToWin = gamesToWin
+  this.wins = [0, 0]
+  this.events = []
+  this.games = []
+  this.sim = () => {
+    let gameNum = 0
+    this.events.push(this.t1.emoji + ' vs ' + this.t2.emoji + (mention ? ' ' + this.t1.role + ' ' + this.t2.role : ''))
+    while (this.wins[0] < this.gamesToWin && this.wins[1] < this.gamesToWin) {
+      ++gameNum
+      let game = new Game(this.t1, this.t2)
+      this.events.push(
+        '__**Game ' +
+          gameNum +
+          ' | ' +
+          this.t1.emoji +
+          ' (' +
+          this.wins[0] +
+          ' - ' +
+          this.wins[1] +
+          ') ' +
+          this.t2.emoji +
+          '**__',
+      )
+      game.sim()
+      this.events = this.events.concat(game.events)
+
+      if (game.winner == this.t1) {
+        this.wins[0]++
+      } else {
+        this.wins[1]++
+      }
+
+      this.games.push(game)
+    }
+    this.events.push(
+      'Series Result: ' + this.t1.emoji + ' (' + this.wins[0] + ' - ' + this.wins[1] + ') ' + this.t2.emoji,
+    )
+  }
+}
+
 function Player(name, rating, playstyle) {
   this.name = name
   this.rating = rating
@@ -154,3 +198,4 @@ function Game(t1, t2) {
 exports.Team = Team
 exports.Player = Player
 exports.Game = Game
+exports.Series = Series

@@ -1,86 +1,49 @@
 const { GoogleSpreadsheet } = require('google-spreadsheet')
-
 const path = require('path')
+const database = require('./database')
 
-const connect = async (spreadsheetId) => {
-  const doc = new GoogleSpreadsheet(spreadsheetId)
-  await doc.useServiceAccountAuth(require(path.join(__dirname, '..', '..', '.google.creds.json')))
+const doc = new GoogleSpreadsheet(process.env.SHEET_ID)
+
+async function authenticate() {
+  await doc.useServiceAccountAuth(require(path.join(__dirname, '..', '..', 'google.creds.json')))
   await doc.loadInfo()
-
-  return doc
+  return Promise.resolve()
 }
 
-const getSheet = async (spreadsheetId, sheetId) => {
-  const doc = await connect(spreadsheetId)
-  return doc.sheetsById[sheetId]
+async function addGames(game) {
+  const sheet = await doc.sheetsByTitle[process.env.SHEET_NAME]
+  let results = await database.getGames()
+  for (let i = 0; i < results[0].length; ++i) {
+    let r = results[0][i]
+    let t1Goals = r.t1Goals1 + r.t1Goals2 + r.t1Goals3
+    let t2Goals = r.t2Goals1 + r.t2Goals2 + r.t2Goals3
+    let winner = t1Goals > t2Goals ? r.t1 : r.t2
+    let loser = t1Goals > t2Goals ? r.t2 : r.t1
+    await sheet.addRow([
+      r.seriesId,
+      r.id,
+      r.t1,
+      r.t2,
+      t1Goals,
+      t2Goals,
+      winner,
+      loser,
+      r.t1Player1,
+      r.t1Player2,
+      r.t1Player3,
+      r.t2Player1,
+      r.t2Player2,
+      r.t2Player3,
+      r.t1Goals1,
+      r.t1Goals2,
+      r.t1Goals3,
+      r.t2Goals1,
+      r.t2Goals2,
+      r.t2Goals3,
+    ])
+  }
+  console.log('Export complete.')
 }
 
-const rowToJSON = (row) => {
-  return row._sheet.headerValues.reduce((memo, column, i) => {
-    return { ...memo, [column]: row._rawData[i] }
-  }, {})
-}
-
-class Table {
-  constructor(name, spreadsheetId, sheetId, keys) {
-    this.name = name
-    this.spreadsheetId = spreadsheetId
-    this.sheetId = sheetId
-    this.keys = keys || []
-    this.sheet = undefined
-    this.populations = undefined
-  }
-
-  async getSheet() {
-    if (!this.sheet) {
-      this.sheet = await getSheet(this.spreadsheetId, this.sheetId)
-    }
-    return this.sheet
-  }
-
-  async get({ criteria, json } = {}) {
-    if (!criteria) criteria = {}
-    const sheet = await this.getSheet()
-    const rows = await sheet.getRows()
-    return rows
-      .filter((r) => Object.keys(criteria).every((p) => r[p] === criteria[p]))
-      .map((r) => (json ? rowToJSON(r) : r))
-  }
-
-  async add({ data, json }) {
-    const sheet = await this.getSheet()
-    const rows = await sheet.addRows(data)
-    return rows.map((r) => (json ? rowToJSON(r) : r))
-  }
-
-  async upsert({ data }) {
-    const sheet = await this.getSheet()
-    const rows = await sheet.getRows()
-    const { newRows, updateRows } = data.reduce(
-      (result, d) => {
-        const updateRows = rows.filter((r) => this.keys.every((key) => r[key] === d[key]))
-        if (updateRows.length === 0) {
-          result.newRows = result.newRows.concat(d)
-        } else {
-          updateRows.forEach((r) => {
-            Object.keys(d).forEach((key) => (r[key] = d[key]))
-          })
-          result.updateRows = result.updateRows.concat(updateRows)
-        }
-        return result
-      },
-      { newRows: [], updateRows: [] },
-    )
-    const promises = []
-    if (newRows.length > 0) promises.push(sheet.addRows(newRows))
-    if (updateRows.length > 0) updateRows.forEach((r) => promises.push(r.save()))
-    await Promise.all(promises)
-  }
-
-  addPopulation(pop) {
-    if (!this.populations) this.populations = []
-    this.populations.push(pop)
-  }
-}
-
-module.exports = Table
+exports.addGames = addGames
+exports.authenticate = authenticate
