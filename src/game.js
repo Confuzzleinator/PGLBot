@@ -77,9 +77,6 @@ function Series(t1, t2, delay, gamesToWin, mention) {
         },
       })
     }
-    this.events.push(
-      'Series Result: ' + this.t1.emoji + ' (' + this.wins[0] + ' - ' + this.wins[1] + ') ' + this.t2.emoji,
-    )
   }
 }
 

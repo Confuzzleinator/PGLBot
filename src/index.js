@@ -5,8 +5,6 @@ const discordOutput = require('./discord_output')
 const database = require('./services/database')
 const sheets = require('./services/sheets')
 const Team = game.Team
-const Player = game.Player
-const Game = game.Game
 const Series = game.Series
 
 const client = new Discord.Client()
@@ -125,10 +123,28 @@ client.on('message', async (message) => {
     )
     let s = new Series(t1, t2, args[2], args[3], false)
     s.sim()
+    s.events.push(discordOutput.createSeriesSummary(s))
     discordOutput.delayed(s.events, s.delay, message.channel)
   } else if (command == 'export') {
     if (!allowed) return message.channel.send(noPermissionMessage + message.member.toString())
     await sheets.addGames()
     database.clearGames()
+  } else if (command == 'list') {
+    if (!allowed) return message.channel.send(noPermissionMessage + message.member.toString())
+    if (queue.length < 1) return message.channel.send('The queue is empty.')
+    let list = []
+    for (let i = 0; i < queue.length; ++i) {
+      list.push(queue[i].t1.abbrev + ' vs ' + queue[i].t2.abbrev)
+    }
+    message.channel.send(list)
+  } else if (command == 'clear') {
+    if (!allowed) return message.channel.send(noPermissionMessage + message.member.toString())
+    queue = []
+    database.clearGames()
+  } else if (command == 'drop') {
+    if (!allowed) return message.channel.send(noPermissionMessage + message.member.toString())
+    if (queue.length < 1) return message.channel.send('The queue is already empty, nothing to drop.')
+    let removed = queue.pop()
+    message.channel.send('Removed ' + removed.t1.abbrev + ' vs ' + removed.t2.abbrev + ' from the queue.')
   }
 })
