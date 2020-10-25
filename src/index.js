@@ -25,6 +25,7 @@ let seriesCounter = 0
 
 client.on('ready', () => {
   sheets.authenticate()
+  client.user.setActivity('Minkz FTW')
   console.log('Bot intialized.')
 })
 

@@ -55,26 +55,32 @@ function createSeriesSummary(series) {
         '\n\n' +
         bold('Player Goals') +
         '\n' +
+        series.t1.emoji +
         series.t1.players[0].name +
         ': ' +
         t1PlayerGoals[0] +
         '\n' +
+        series.t1.emoji +
         series.t1.players[1].name +
         ': ' +
         t1PlayerGoals[1] +
         '\n' +
+        series.t1.emoji +
         series.t1.players[2].name +
         ': ' +
         t1PlayerGoals[2] +
         '\n' +
+        series.t2.emoji +
         series.t2.players[0].name +
         ': ' +
         t2PlayerGoals[0] +
         '\n' +
+        series.t2.emoji +
         series.t2.players[1].name +
         ': ' +
         t2PlayerGoals[1] +
         '\n' +
+        series.t2.emoji +
         series.t2.players[2].name +
         ': ' +
         t2PlayerGoals[2],
