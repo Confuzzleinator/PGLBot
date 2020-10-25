@@ -10,7 +10,7 @@ async function authenticate() {
   return Promise.resolve()
 }
 
-async function addGames(game) {
+async function addGames() {
   const sheet = await doc.sheetsByTitle[process.env.SHEET_NAME]
   let results = await database.getGames()
   for (let i = 0; i < results[0].length; ++i) {

@@ -75,8 +75,8 @@ client.on('message', async (message) => {
         database.addGame(queue[i].games[j], seriesCounter)
       }
       await discordOutput.delayed(queue[i].events, queue[i].delay, message.channel)
+      ++seriesCounter
     }
-    ++seriesCounter
   } else if (command == 'sim') {
     let t1Data = await database.getTeam(args[0])
     let t2Data = await database.getTeam(args[1])

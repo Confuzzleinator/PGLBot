@@ -40,7 +40,42 @@ function Series(t1, t2, delay, gamesToWin, mention) {
         this.wins[1]++
       }
 
-      this.games.push(game)
+      this.games.push({
+        t1: {
+          abbrev: this.t1.abbrev,
+          players: [
+            {
+              name: this.t1.players[0].name,
+              goals: this.t1.players[0].goals,
+            },
+            {
+              name: this.t1.players[1].name,
+              goals: this.t1.players[1].goals,
+            },
+            {
+              name: this.t1.players[2].name,
+              goals: this.t1.players[2].goals,
+            },
+          ],
+        },
+        t2: {
+          abbrev: this.t2.abbrev,
+          players: [
+            {
+              name: this.t2.players[0].name,
+              goals: this.t2.players[0].goals,
+            },
+            {
+              name: this.t2.players[1].name,
+              goals: this.t2.players[1].goals,
+            },
+            {
+              name: this.t2.players[2].name,
+              goals: this.t2.players[2].goals,
+            },
+          ],
+        },
+      })
     }
     this.events.push(
       'Series Result: ' + this.t1.emoji + ' (' + this.wins[0] + ' - ' + this.wins[1] + ') ' + this.t2.emoji,
@@ -136,6 +171,12 @@ function Game(t1, t2) {
 
   this.t1.goals = 0
   this.t2.goals = 0
+
+  // Zero all players goals
+  for (let i = 0; i < this.t1.players.length; ++i) {
+    this.t1.players[i].goals = 0
+    this.t2.players[i].goals = 0
+  }
 
   this.sim = () => {
     let time = 299

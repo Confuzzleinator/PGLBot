@@ -104,7 +104,7 @@ async function getPlayers(id) {
 }
 
 async function getTeam(abbrev) {
-  let rows = await db.promise().query('SELECT * FROM Teams WHERE abbreviation="' + abbrev + '";')
+  let rows = await db.promise().query('SELECT * FROM Teams WHERE abbreviation = "' + abbrev + '";')
   return rows[0][0]
 }
 
