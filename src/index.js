@@ -10,7 +10,7 @@ const Series = game.Series
 const client = new Discord.Client()
 client.login(process.env.DISCORD_BOT_KEY)
 const prefix = '!'
-const defaultDelay = 2000
+const defaultDelay = 5000
 const maxDelay = 20000
 const minDelay = 2000
 const defaultGames = 3
@@ -25,7 +25,7 @@ let seriesCounter = 0
 
 client.on('ready', () => {
   sheets.authenticate()
-  client.user.setActivity('Minkz FTW')
+  client.user.setActivity('LETS GO STAGE 3')
   console.log('Bot intialized.')
 })
 
@@ -45,6 +45,10 @@ client.on('message', async (message) => {
     if (!allowed) return message.channel.send(noPermissionMessage + message.member.toString())
     let t1Data = await database.getTeam(args[0])
     let t2Data = await database.getTeam(args[1])
+    if (t1Data == undefined)
+      return message.channel.send("Couldn't find the team " + args[0] + ' ' + message.member.toString())
+    if (t2Data == undefined)
+      return message.channel.send("Couldn't find the team " + args[1] + ' ' + message.member.toString())
     if (args[2] == undefined) args[2] = defaultDelay
     if (args[3] == undefined) args[3] = 3
     t1 = new Team(
@@ -70,6 +74,7 @@ client.on('message', async (message) => {
     if (!allowed) return message.channel.send(noPermissionMessage + message.member.toString())
     for (let i = 0; i < queue.length; ++i) {
       queue[i].sim()
+      queue[i].events.push(discordOutput.createSeriesSummary(queue[i]))
       for (let j = 0; j < queue[i].games.length; ++j) {
         database.addGame(queue[i].games[j], seriesCounter)
       }
@@ -79,6 +84,10 @@ client.on('message', async (message) => {
   } else if (command == 'sim') {
     let t1Data = await database.getTeam(args[0])
     let t2Data = await database.getTeam(args[1])
+    if (t1Data == undefined)
+      return message.channel.send("Couldn't find the team " + args[0] + ' ' + message.member.toString())
+    if (t2Data == undefined)
+      return message.channel.send("Couldn't find the team " + args[1] + ' ' + message.member.toString())
     if (args[2] == undefined) {
       args[2] = defaultDelay
     } else if (args[2] < minDelay) {
